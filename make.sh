@@ -1,1 +1,1 @@
-pyinstaller --onefile main.py -n local-db-backup --distpath /Volumes/Storage/GoogleDrive/Bin
+pyinstaller --onefile main.py -n local-db-backup --distpath /Volumes/Storage/GoogleDrive/Bin && chmod 777 /Volumes/Storage/GoogleDrive/Bin/local-db-backup

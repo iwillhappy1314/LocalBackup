@@ -34,32 +34,27 @@ def main():
         today = datetime.now().strftime("%Y-%m-%d-%H")
         folder_path = os.path.join(backup_path, today)
 
-        print(folder_path)
-
         if not os.path.exists(folder_path):
-            os.makedirs(folder_path, exist_ok=True)
+            os.makedirs(folder_path, exist_ok=True, mode=0o777)
 
         for sd in site_data:
             url = f'http://127.0.0.1:{site_data[sd]["port"]}/'
 
             try:
-                response = requests.get(url)
+                requests.get(url)
 
-                if response.status_code == 200:
-                    os.chdir(site_data[sd]["path"] + '/app/public')
-                    os.environ["MYSQL_HOME"] = f'{local_path}/run/{sd}/conf/mysql'
-                    os.environ["WP_CLI_CONFIG_PATH"] = os.path.join(local_bin_path, "wp-cli/config.yaml")
+                os.chdir(site_data[sd]["path"] + '/app/public')
+                os.environ["PATH"] = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/Applications' \
+                                     '/Local.app/Contents/Resources/extraResources/bin'
+                os.environ["MYSQL_HOME"] = f'{local_path}/run/{sd}/conf/mysql'
+                os.environ["WP_CLI_CONFIG_PATH"] = os.path.join(local_bin_path, "wp-cli/config.yaml")
 
-                    os.system(f'/usr/local/bin/wp db export {site_data[sd]["name"]}.sql')
+                os.system(f'wp db export {site_data[sd]["name"]}.sql')
 
-                    # 移动.sql文件到文件夹
-                    source_file_path = os.path.join(os.getcwd(), f'{site_data[sd]["name"]}.sql')
-                    target_file_path = os.path.join(folder_path, f'{site_data[sd]["name"]}.sql')
-                    shutil.move(source_file_path, target_file_path)
-
-                    os.system('exit')
-                else:
-                    print(f'Failed to access {url}')
+                # 移动.sql文件到文件夹
+                source_file_path = os.path.join(os.getcwd(), f'{site_data[sd]["name"]}.sql')
+                target_file_path = os.path.join(folder_path, f'{site_data[sd]["name"]}.sql')
+                shutil.move(source_file_path, target_file_path)
 
             except ConnectionError:
                 print(f'{site_data[sd]["name"]} not running, skip it.')
