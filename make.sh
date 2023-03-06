@@ -1,0 +1,1 @@
+pyinstaller --onefile main.py -n local-db-backup --distpath /Volumes/Storage/GoogleDrive/Bin
